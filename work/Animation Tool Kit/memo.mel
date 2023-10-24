@@ -1,0 +1,32 @@
+//現在の時間
+currentTime 0 ;
+
+timeControl -e -endScrub $gPlayBackSlider;
+// TimeSlider|MainTimeSliderLayout|formLayout8|frameLayout2|timeControl1 // 
+timeField -edit -value `currentTime -query` TimeSlider|MainTimeSliderLayout|formLayout8|timeField1;
+// TimeSlider|MainTimeSliderLayout|formLayout8|timeField1 // 
+
+
+//タイムライン範囲選択
+timeControl -e -beginScrub $gPlayBackSlider;
+// Result: TimeSlider|MainTimeSliderLayout|formLayout8|frameLayout2|timeControl1 // 
+playbackStateChanged;
+// Result: 1 // 
+playbackStateChanged;
+// Result: 1 // 
+currentTime 193 ;
+timeControl -e -endScrub $gPlayBackSlider;
+// Result: TimeSlider|MainTimeSliderLayout|formLayout8|frameLayout2|timeControl1 // 
+timeField -edit -value `currentTime -query` TimeSlider|MainTimeSliderLayout|formLayout8|timeField1;
+// Result: TimeSlider|MainTimeSliderLayout|formLayout8|timeField1 // 
+
+
+currentTime 180 ;
+timeControl -e -beginScrub $gPlayBackSlider;
+currentTime 193 ;
+timeControl -e -endScrub $gPlayBackSlider;
+
+//キーフレームコピー
+evalEcho timeSliderCopyKey;
+timeSliderCopyKey;
+doUpdateTangentFeedback;
