@@ -5,8 +5,9 @@ from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 import maya.OpenMayaUI as omui
 from PySide2.QtWidgets import *
 from PySide2.QtGui import QIcon
+from PySide2.QtCore import Qt
 
-class HM_AnimTools(MayaQWidgetDockableMixin, QWidget):
+class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
     title = 'HM_AnimTools'
 
     def __init__(self, parent = None):
@@ -15,8 +16,18 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QWidget):
         self.setObjectName(self.title)
         self.setWindowTitle(self.title)
 
+        sq_widget = QScrollArea(self)
+        sq_widget.setWidgetResizable(True)#リサイズに中身が追従するか
+        sq_widget.setFocusPolicy(Qt.NoFocus)#スクロールエリアをフォーカスできるか
+        sq_widget.setMinimumHeight(1)#ウィンドウ最小サイズ
+        self.setCentralWidget(sq_widget)
+
+        self.unique_layout = QGridLayout()
+        self.unique_layout.setSpacing(0)#ウィジェットどうしの間隔
+        sq_widget.setLayout(self.unique_layout)
+
+'''
         self.centralwidget = QWidget(self)
-        self.lSpacer = QSpacerItem(self)
         self.cLayout = QHBoxLayout(self)
 
         self.playButton = QPushButton(self)
@@ -24,8 +35,7 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QWidget):
 
         self.playButton.setIcon(QIcon(':/timeplay.png'))
         self.revButton.setIcon(QIcon(':/timerev.png'))
-        
-        self.rSpacer = QSpacerItem(self)
+'''
 '''
 class HM_AnimTools(MayaQWidgetDockableMixin, QWidget):
     title = 'HM_AnimTools'
