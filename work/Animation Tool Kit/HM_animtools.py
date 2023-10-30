@@ -4,12 +4,13 @@ import maya.mel as mel
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 import maya.OpenMayaUI as omui
 from PySide2.QtWidgets import *
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QFont
 
 tool_name = 'HM_AnimTools'
 custom_mixin_widget = None
 scriptJob_id_anim = None
 win = None
+ui_size = 60
 
 class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
     title = tool_name
@@ -21,6 +22,11 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
 
         self.setObjectName(self.title)
         self.setWindowTitle(self.title)
+
+        self._font = QFont()
+
+        self.plusButton = QPushButton(self)
+        self.minusButton = QPushButton(self)
 
         self.playButton = QPushButton(self)
         self.revButton = QPushButton(self)
@@ -36,26 +42,18 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
         self.cutButton = QPushButton(self)
         self.deleteButton = QPushButton(self)
 
-        self.playButton.setGeometry(300, 20, 60, 60)
-        self.revButton.setGeometry(230, 20, 60, 60)
-        self.nextButton.setGeometry(370, 20, 60, 60)
-        self.prevButton.setGeometry(160, 20, 60, 60)
-        self.startButton.setGeometry(90, 20, 60, 60)
-        self.endButton.setGeometry(440, 20, 60, 60)
-        self.fwdButton.setGeometry(510, 20, 60, 60)
-        self.rewButton.setGeometry(20, 20, 60, 60)
+        self.plusButton.setGeometry(50, 20, 25, 25)
+        self.minusButton.setGeometry(20, 20, 25, 25)
 
-        self.copyButton.setGeometry(160, 100, 130, 40)
-        self.pasteButton.setGeometry(300, 100, 130, 40)
-        self.cutButton.setGeometry(20, 100, 130, 40)
-        self.deleteButton.setGeometry(440, 100, 130, 40)
+        self.plusButton.setText('+')
+        self.minusButton.setText('-')
 
         self.playButton.setIcon(QIcon(':/timeplay.png'))
         self.revButton.setIcon(QIcon(':/timerev.png'))
         self.nextButton.setIcon(QIcon(':/timenext.png'))
         self.prevButton.setIcon(QIcon(':/timeprev.png'))
-        self.startButton.setIcon(QIcon(':/timeend.png'))
-        self.endButton.setIcon(QIcon(':/timestart.png'))
+        self.startButton.setIcon(QIcon(':/timestart.png'))
+        self.endButton.setIcon(QIcon(':/timeend.png'))
         self.fwdButton.setIcon(QIcon(':/timefwd.png'))
         self.rewButton.setIcon(QIcon(':/timerew.png'))
 
@@ -64,14 +62,64 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
         self.cutButton.setText('Cut')
         self.deleteButton.setText('Delete')
 
+        self.plusButton.clicked.connect(self.push_plus)
+        self.minusButton.clicked.connect(self.push_minus)
+
         self.playButton.clicked.connect(self.push_play)
+        self.revButton.clicked.connect(self.push_rev)
+        self.nextButton.clicked.connect(self.push_next)
+        self.prevButton.clicked.connect(self.push_prev)
+        self.startButton.clicked.connect(self.push_start)
+        self.endButton.clicked.connect(self.push_end)
+        self.fwdButton.clicked.connect(self.push_fwd)
+        self.rewButton.clicked.connect(self.push_rew)
+
         self.copyButton.clicked.connect(self.push_copy)
         self.pasteButton.clicked.connect(self.push_paste)
         self.cutButton.clicked.connect(self.push_cut)
         self.deleteButton.clicked.connect(self.push_delete)
+
+        self.set_buttonsGeo()
+
+    def push_plus(self):
+        global ui_size
+        ui_size += 10
+        self.minusButton.setEnabled(True)
+        self.set_buttonsGeo()
+
+    def push_minus(self):
+        global ui_size
+        if (ui_size > 30):
+            ui_size -= 10
+            self.set_buttonsGeo()
+        if (ui_size == 30):
+            self.minusButton.setEnabled(False)
+
+    def set_buttonsGeo(self):
+        global ui_size
+        self.playButton.setGeometry(ui_size * 4 + 60, 60, ui_size, ui_size)
+        self.revButton.setGeometry(ui_size * 3 + 50, 60, ui_size, ui_size)
+        self.nextButton.setGeometry(ui_size * 5 + 70, 60, ui_size, ui_size)
+        self.prevButton.setGeometry(ui_size * 2 + 40, 60, ui_size, ui_size)
+        self.startButton.setGeometry(ui_size * 6 + 80, 60, ui_size, ui_size)
+        self.endButton.setGeometry(ui_size + 30, 60, ui_size, ui_size)
+        self.fwdButton.setGeometry(ui_size * 7 + 90, 60, ui_size, ui_size)
+        self.rewButton.setGeometry(20, 60, ui_size, ui_size)
+
+        self.copyButton.setGeometry(ui_size * 2 + 40, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
+        self.pasteButton.setGeometry(ui_size * 4 + 60, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
+        self.cutButton.setGeometry(20, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
+        self.deleteButton.setGeometry(ui_size * 6 + 80, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
+
+        fontScale = ui_size / 60
+        self._font.setPixelSize(20 * fontScale)
+
+        self.copyButton.setFont(self._font)
+        self.pasteButton.setFont(self._font)
+        self.cutButton.setFont(self._font)
+        self.deleteButton.setFont(self._font)
     
     def push_play(self):
-        #mel.eval('playButtonForward;')
         is_anim_playing = cmds.play(q = True, state = True)
     
         if is_anim_playing:
@@ -79,6 +127,33 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
         else:
             cmds.play(forward = True, state = True)
             self.playButton.setIcon(QIcon(':/timestop.png'))
+    
+    def push_rev(self):
+        is_anim_playing = cmds.play(q = True, state = True)
+    
+        if is_anim_playing:
+            cmds.play(state = False)
+        else:
+            cmds.play(forward = False, state = True)
+            self.revButton.setIcon(QIcon(':/timestop.png'))
+    
+    def push_next(self):
+        mel.eval('NextKey;')
+    
+    def push_prev(self):
+        mel.eval('PreviousKey;')
+    
+    def push_start(self):
+        mel.eval('playButtonStepForward;')
+    
+    def push_end(self):
+        mel.eval('playButtonStepBackward;')
+    
+    def push_fwd(self):
+        mel.eval('playButtonEnd;')
+    
+    def push_rew(self):
+        mel.eval('playButtonStart;')
     
     def push_copy(self):
         mel.eval('timeSliderCopyKey;')
