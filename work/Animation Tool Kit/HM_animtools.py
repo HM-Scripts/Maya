@@ -97,19 +97,19 @@ class HM_AnimTools(MayaQWidgetDockableMixin, QMainWindow):
 
     def set_buttonsGeo(self):
         global ui_size
-        self.playButton.setGeometry(ui_size * 4 + 60, 60, ui_size, ui_size)
-        self.revButton.setGeometry(ui_size * 3 + 50, 60, ui_size, ui_size)
-        self.nextButton.setGeometry(ui_size * 5 + 70, 60, ui_size, ui_size)
-        self.prevButton.setGeometry(ui_size * 2 + 40, 60, ui_size, ui_size)
-        self.startButton.setGeometry(ui_size * 6 + 80, 60, ui_size, ui_size)
-        self.endButton.setGeometry(ui_size + 30, 60, ui_size, ui_size)
-        self.fwdButton.setGeometry(ui_size * 7 + 90, 60, ui_size, ui_size)
+        self.playButton.setGeometry(ui_size * 1.2 * 4 + 20, 60, ui_size, ui_size)
+        self.revButton.setGeometry(ui_size * 1.2 * 3 + 20, 60, ui_size, ui_size)
+        self.nextButton.setGeometry(ui_size * 1.2 * 5 + 20, 60, ui_size, ui_size)
+        self.prevButton.setGeometry(ui_size * 1.2 * 2 + 20, 60, ui_size, ui_size)
+        self.startButton.setGeometry(ui_size * 1.2 * 6 + 20, 60, ui_size, ui_size)
+        self.endButton.setGeometry(ui_size * 1.2 + 20, 60, ui_size, ui_size)
+        self.fwdButton.setGeometry(ui_size * 1.2 * 7 + 20, 60, ui_size, ui_size)
         self.rewButton.setGeometry(20, 60, ui_size, ui_size)
 
-        self.copyButton.setGeometry(ui_size * 2 + 40, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
-        self.pasteButton.setGeometry(ui_size * 4 + 60, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
-        self.cutButton.setGeometry(20, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
-        self.deleteButton.setGeometry(ui_size * 6 + 80, ui_size + 80, ui_size * 2 + 10, ui_size * 2 / 3)
+        self.copyButton.setGeometry(ui_size * 1.2 * 2 + 20, ui_size * 1.3 + 60, ui_size * 2.2, ui_size * 2 / 3)
+        self.pasteButton.setGeometry(ui_size * 1.2 * 4 + 20, ui_size * 1.3 + 60, ui_size * 2.2, ui_size * 2 / 3)
+        self.cutButton.setGeometry(20, ui_size * 1.3 + 60, ui_size * 2.2, ui_size * 2 / 3)
+        self.deleteButton.setGeometry(ui_size * 1.2 * 6 + 20, ui_size * 1.3 + 60, ui_size * 2.2, ui_size * 2 / 3)
 
         fontScale = ui_size / 60
         self._font.setPixelSize(20 * fontScale)
