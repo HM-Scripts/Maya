@@ -4,7 +4,7 @@ import os
 import re
 from functools import partial
 
-def HM_increment_saver():
+def HM_increment_saver_main():
     current_file = cmds.file(q = True, sceneName = True, shortName = True)
     current_file_type = cmds.file(q = True, type = True)
     rename_str = file_renamer(current_file)
@@ -15,14 +15,13 @@ def HM_increment_saver():
         current_file_type = str(current_file_type).replace("['", '').replace("']", '')
         current_file_new = cmds.file(q = True, sceneName = True)
         if os.path.exists(current_file_new):
-            message_Dialog = cmds.confirmDialog(title = u'上書き確認', message = '同じ名前のファイルが既に存在します。\n上書きしますか？',
-                                                button = ['Yes', 'No'], defaultButton='Yes', cancelButton='No', dismissString='No')
-            if message_Dialog == 'No':
+            message_Dialog = cmds.confirmDialog(title = lText('overwrite_title'), message = lText('overwrite_text1') + '\n' + lText('overwrite_text2'),
+                                                button = [lText('sel_Yes'), lText('sel_No')], defaultButton = lText('sel_Yes'), cancelButton = lText('sel_No'), dismissString = lText('sel_No'))
+            if message_Dialog == lText('sel_No'):
                 cmds.file(rename = current_file)
-                cmds.warning(u'キャンセルしました')
                 return
         cmds.file(save = True, type = current_file_type, force = True)
-        result = '結果: ' + current_file_new
+        result = lText('result') + current_file_new
         mel.eval('print "' + result + '"')
 
 
@@ -46,7 +45,7 @@ def file_renamer(input_string):
         elif match_case == 3:
             return re.sub(pattern, "-" + num_str_f + ".ma", input_string)
         elif match_case == 4:
-            return re.sub(pattern, "-" + num_str_f + ".mb", input_string)
+            return re.sub(pattern, "_" + num_str_f + ".mb", input_string)
         elif match_case == 5:
             return re.sub(pattern, "." + num_str_f + ".mb", input_string)
         elif match_case == 6:
@@ -57,6 +56,8 @@ def file_renamer(input_string):
             return re.sub(pattern, num_str_f + "_", input_string)
         elif match_case == 9:
             return re.sub(pattern, num_str_f + "-", input_string)
+        else:
+            return input_string
     else:
         return input_string
 
@@ -64,7 +65,7 @@ def file_renamer(input_string):
 def file_renamer_and_saver(*args):
     new_file_name = str(cmds.textField('file_rename', q = True, text = True)).replace('.ma', '').replace('.mb', '')
     if new_file_name == '':
-        cmds.warning(u'ファイル名が入力されていません')
+        cmds.warning(lText('noFileName'))
     else:
         num_len = str(0) + str(cmds.intField('file_num_len', q = True, value = True))
         num_len_f = format(1, num_len)
@@ -94,10 +95,10 @@ def file_renamer_and_saver(*args):
         cmds.file(rename = new_file_name)
         saving_file = cmds.file(q = True, sceneName = True)
         if os.path.exists(saving_file):
-            cmds.confirmDialog(title = u'警告', message = u'既に同じファイル名が存在するため、保存できません。')
+            cmds.confirmDialog(title = lText('warning'), message = lText('cantSave'))
             return
         cmds.file(save = True, type = new_file_type, force = True)
-        result = '結果: ' + saving_file
+        result = lText('result') + saving_file
         mel.eval('print "' + result + '"')
         cmds.deleteUI('incSaverWin')
 
@@ -107,7 +108,7 @@ def saved_value():
         return cmds.optionVar(q = 'HM_Increment_Saver_numValue')
     else:
         return 3
-    
+
 
 def saved_position():
     if cmds.optionVar(ex = 'HM_Increment_Saver_position'):
@@ -134,14 +135,14 @@ def saved_str():
 def increment_saver_UI(filename, filetype):
     if cmds.window('incSaverWin', exists = True):
         cmds.deleteUI('incSaverWin')
-    cmds.window('incSaverWin', title = '増分保存の設定', width = 400)
+    cmds.window('incSaverWin', title = lText('uiTitle'), width = 400)
     base_layout = cmds.columnLayout(columnAttach = ('both', 5), rowSpacing = 5, columnWidth = 400)
     layout1 = cmds.rowLayout(numberOfColumns = 2, columnWidth2 = (90, 310), p = base_layout)
-    cmds.text(label = u'ファイル名', p = layout1, al = 'center', width = 90)
+    cmds.text(label = lText('fName'), p = layout1, al = 'center', width = 90)
     cmds.textField('file_rename', text = filename, p = layout1, width = 295)
     layout3 = cmds.rowLayout(numberOfColumns = 3, columnWidth3 = (130, 140, 130), p = base_layout)
     layout2 = cmds.rowColumnLayout(numberOfRows = 3, p = layout3)
-    cmds.text(label = u'ファイルの種類', p = layout2)
+    cmds.text(label = lText('fType'), p = layout2)
     cmds.radioCollection('filetype_radio')
     cmds.radioButton('radio_ma', label = 'Maya ASCII', p = layout2)
     cmds.radioButton('radio_mb', label = 'Maya Binary', p = layout2)
@@ -150,26 +151,63 @@ def increment_saver_UI(filename, filetype):
     else:
         cmds.radioButton('radio_ma', e = True, select = True)
     layout4 = cmds.rowColumnLayout(numberOfRows = 4, p = layout3)
-    cmds.text(label = u'連番の桁数と位置', p = layout4)
+    cmds.text(label = lText('aboutNum'), p = layout4)
     layout5 = cmds.rowLayout(numberOfColumns = 2, columnWidth2 = (30, 70), p = layout4)
-    cmds.text(label = u'桁数', p = layout5)
+    cmds.text(label = lText('digits'), p = layout5)
     cmds.intField('file_num_len', minValue = 1, value = saved_value(), step = 1, p = layout5, width = 60)
     cmds.radioCollection('position_radio')
-    cmds.radioButton('radio_before', label = u'名前の前', p = layout4)
-    cmds.radioButton('radio_after', label = u'名前の後', p = layout4)
+    cmds.radioButton('radio_before', label = lText('before'), p = layout4)
+    cmds.radioButton('radio_after', label = lText('after'), p = layout4)
     saved_position()
     layout6 = cmds.rowColumnLayout(numberOfRows = 4, p = layout3)
-    cmds.text(label = u'連番の区切り文字', p = layout6)
+    cmds.text(label = lText('delimiter'), p = layout6)
     cmds.radioCollection('string_radio')
-    cmds.radioButton('radio_dot', label = u'. (ドット)', p = layout6)
-    cmds.radioButton('radio_und', label = u'_ (アンダーバー)', p = layout6)
-    cmds.radioButton('radio_hyp', label = u'- (ハイフン)', p = layout6)
+    cmds.radioButton('radio_dot', label = lText('dot'), p = layout6)
+    cmds.radioButton('radio_und', label = lText('underscore'), p = layout6)
+    cmds.radioButton('radio_hyp', label = lText('hyphen'), p = layout6)
     saved_str()
-    cmds.button(label = u'保存', p = base_layout, command = partial(file_renamer_and_saver))
+    cmds.button(label = lText('save'), p = base_layout, command = partial(file_renamer_and_saver))
     cmds.text(label = 'version: ' + version(), p = base_layout, width = 380, align = 'right')
     cmds.showWindow('incSaverWin')
 
 
+def lText(inputText):
+    localizationDict = {
+        "en_US": {
+            "overwrite_title": "Increment Saver", "overwrite_text1": "A file with the same name already exists.",
+            "overwrite_text2": "Do you want to replace it?", "sel_Yes": "Yes", "sel_No": "No", "result": "Result: ",
+            "noFileName": "No file name entered.", "warning": "Warning",
+            "cantSave": "Cannot save because a file with the same name already exists.",
+            "uiTitle": "Setting Incremental Saver", "fName": "File Name", "fType": "File Type", "aboutNum": "Digits and Position",
+            "digits": "Digits", "before": "Before the name", "after": "After the name", "delimiter": "Delimiter",
+            "dot": ". (dot)", "underscore": "_ (underscore)", "hyphen": "- (hyphen)", "save": "Save"
+        },
+        "ja_JP": {
+            "overwrite_title": "増分保存", "overwrite_text1": "同じ名前のファイルが既に存在します。",
+            "overwrite_text2": "上書きしますか？", "sel_Yes": "はい", "sel_No": "いいえ", "result": "結果: ",
+            "noFileName": "ファイル名が入力されていません。", "warning": "警告",
+            "cantSave": "既に同じ名前のファイルが存在するため、保存できません。",
+            "uiTitle": "増分保存の設定", "fName": "ファイル名", "fType": "ファイルの種類", "aboutNum": "連番の桁数と位置",
+            "digits": "桁数", "before": "名前の前", "after": "名前の後", "delimiter": "連番の区切り文字",
+            "dot": ". (ドット)", "underscore": "_ (アンダーバー)", "hyphen": "- (ハイフン)", "save": "保存"
+        }
+    }
+    return localizationDict[maya_Language()][inputText]
+
+
+def maya_Language():
+    lang = cmds.about(uil = True)
+    return lang
+
+
 def version():
-    version = '2.0.0'
+    version = '2.1.0'
     return version
+
+
+def HM_increment_saver():
+    HM_increment_saver_main()
+
+
+if __name__ == "__main__": 
+    HM_increment_saver_main()
