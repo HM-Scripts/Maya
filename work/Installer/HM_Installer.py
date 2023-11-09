@@ -52,11 +52,10 @@ def HM_installer():
     
     #フォルダ作成
     mkDir = loadSetting['Properties'].get('mkdir')
-    if mkDir != 'None':
-        for directory in mkDir:
-            dirPath = HM_scriptDir + directory
-            if not os.path.exists(dirPath):
-                os.makedirs(dirPath)
+    for directory in mkDir:
+        dirPath = HM_scriptDir + directory
+        if not os.path.exists(dirPath):
+            os.makedirs(dirPath)
 
     #ファイルコピー
     scriptFiles = loadSetting['Properties'].get('scriptFiles')
