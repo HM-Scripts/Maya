@@ -1,0 +1,15 @@
+{
+    "Properties": {
+        "dataType": "HM_mayaScriptInstallData",
+        "scriptName": "",
+        "scriptFiles": [''],
+        "mkdir": "None",
+        "buttonNum": 1,
+        "buttonName": [""],
+        "command": [""],
+        "image": [""],
+        "annotation": [""],
+        "label": [""],
+        "sourceType": ["Python"]
+    }
+}
