@@ -62,6 +62,7 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
         self.version_Label.setText('version: ' + version())
         self.version_Label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
+    #シーンをリストに追加
     def addScene(self):
         global renderQueueList
         scenePath = cmds.file(sceneName = True, q = True)
@@ -106,6 +107,7 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
         renderQueueList['queue'].append(addText)
         self.renderList.addItem(addText)
 
+    #シーンをリストから削除
     def delScene(self):
         global renderQueueList
         row = self.renderList.currentRow()
@@ -117,6 +119,7 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
             del renderQueueList[text]
             renderQueueList['queue'].remove(text)
 
+    #リストをクリア
     def clearList(self):
         global renderQueueList
         self.renderList.clear()
@@ -125,9 +128,11 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
             'queue': []
         }
 
+    #UIを閉じる
     def closeUI(self):
         self.close()
 
+    #リスト上の選択を変更するとき
     def changeSelected(self):
         global renderQueueList
         row = self.renderList.currentRow()
@@ -143,6 +148,7 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
                     + 'End: ' + str(setting['eFrame']))
             self.renderProperties.setText(text)
 
+    #キューのリストを書き出し
     def exportQueue(self):
         if self.renderList.count() == 0:
             self.renderProperties.setText('No list exists.')
@@ -151,6 +157,7 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
             filePath = cmds.fileDialog2(fileFilter = filter, dialogStyle = 1, fileMode = 0, dir = cmds.workspace(fullName = True, q = True))
             saveJson(filePath[0])
 
+    #キューのリストの読み込み
     def importQueue(self):
         global renderQueueList
         filter = "JSON Files (*.json)"
@@ -189,7 +196,11 @@ class localRenderQUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
 def localRenderQ():
     global renderQueueList
     scenePath = None
+
+    #キューに値が存在するか確認
     if len(renderQueueList['queue']) >0:
+    
+        #シーンごとに処理
         for renderQueue in renderQueueList['queue']:
             queueData = renderQueueList[renderQueue]
             projectPath = queueData['projectPath']
@@ -202,34 +213,61 @@ def localRenderQ():
             modifyExtension = queueData['mExt']
             startExtension = queueData['sExt']
             byExtension = queueData['bExt']
+
+            #プロジェクト設定が異なる場合は更新
             if cmds.workspace(fullName = True, q = True) != projectPath:
                 cmds.workspace(projectPath, o = True)
+            
+            #ファイルを開く
             cmds.file(scenePath, o = True, f = True)
+
+            #レンダラー確認
             if renderer == 'arnold':
+
+                #現在のレンダラをArnoldに設定
                 cmds.setAttr('defaultRenderGlobals.currentRenderer', 'arnold', type='string')
                 print('start arnoldRender')
+
+                #プログレスウィンドウを表示
                 cmds.progressWindow(isInterruptable = True, title = 'arnoldRender', status = 'Rendering: ' + renderQueue, min = int(startFrame) - 1, max = int(endFrame))
+
+                #フレームごとにレンダリング
                 for frameNum in range(int(startFrame), int(endFrame) + 1):
+
+                    #レンダリング
                     arnoldRenderer(frameNum, width, height, modifyExtension, startExtension)
+
+                    #フレーム番号変更
                     if modifyExtension:
                         startExtension += byExtension
+
+                    #キャンセル確認
                     if cmds.progressWindow(query = True, isCancelled = True):
                         cmds.file(scenePath, o = True, f = True)
                         cmds.progressWindow(endProgress = True)
                         return 1
+
+                    #プログレスバー更新
                     cmds.progressWindow(e = True, progress = frameNum)
+                
+                #プログレスバー終了
                 cmds.progressWindow(endProgress = True)
         cmds.file(scenePath, o = True, f = True)
         return 0
 
 def arnoldRenderer(frame, width, height, mExt, extNum):
+
+    #フレームを設定
     cmds.setAttr('defaultRenderGlobals.startFrame', frame)
     cmds.setAttr('defaultRenderGlobals.endFrame', frame)
     cmds.setAttr('defaultRenderGlobals.modifyExtension', mExt)
     if mExt:
         cmds.setAttr('defaultRenderGlobals.startExtension', extNum)
+    
+    #レンダリングを実行
     cmds.arnoldRender(b = True, w = width, h = height)
 
+#JSONプロパティ
 def HM_jsonProperty():
     dt_now = datetime.datetime.utcnow()
     properties = {
@@ -248,6 +286,7 @@ def HM_jsonProperty():
     }
     return properties
 
+#JSON書き出し
 def saveJson(filePath):
     global renderQueueList
     jsonData = {}
@@ -256,6 +295,7 @@ def saveJson(filePath):
     with open(filePath, 'w') as jsonFile:
         json.dump(jsonData, jsonFile, indent = 4)
 
+#JSON読み込み
 def openJson(filePath):
     print()
     fileOpen = open(filePath, 'r')
@@ -265,6 +305,7 @@ def openJson(filePath):
             return fileLoad['renderQueue']
     return 'dataError'
 
+#開始関数
 def HM_localRenderQUI():
     global renderQueueList
     renderQueueList = {
