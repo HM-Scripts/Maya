@@ -35,9 +35,6 @@ def HM_installer():
     
     #jsonの読み込み処理
     loadSetting = openJson(import_path + 'installConfig.hmd')
-    if not os.path.isdir(loadSetting):
-        cmds.error('Script install error.')
-        return
 
     #インストールデータ確認
     if 'dataType' in loadSetting['Properties']:

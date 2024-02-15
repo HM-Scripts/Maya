@@ -1,0 +1,15 @@
+{
+    "Properties": {
+        "dataType": "HM_mayaScriptInstallData",
+        "scriptName": "HM_vertex_extender",
+        "scriptFiles": ["HM_vertex_extender.py"],
+        "mkdir": [],
+        "buttonNum": 1,
+        "buttonName": ["HM_vertex_extender"],
+        "command": ["from HM_Scripts import HM_vertex_extender;HM_vertex_extender.main()"],
+        "image": ["pythonFamily.png"],
+        "annotation": ["HM_vertex_extender"],
+        "label": ["vertex"],
+        "sourceType": ["Python"]
+    }
+}

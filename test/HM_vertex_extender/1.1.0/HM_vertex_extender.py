@@ -3,6 +3,7 @@ import math
 
 #呼び出し関数
 def HM_vertex_extender():
+    global vertex0
 
     #選択されている項目
     selected = cmds.ls(sl = True, fl = True)
@@ -14,7 +15,7 @@ def HM_vertex_extender():
         vertex0 = selected[0]
 
         #2つ目を選択するウィンドウ表示
-        vertex_extender_UI(vertex0)
+        vertex_extender_UI()
 
     #選択された頂点の数が1以外
     else:
@@ -22,7 +23,7 @@ def HM_vertex_extender():
 
 
 #UI表示関数
-def vertex_extender_UI(vertex0):
+def vertex_extender_UI():
 
     #Window初期化
     if cmds.window("verExtWin", exists=True):
@@ -32,14 +33,14 @@ def vertex_extender_UI(vertex0):
     cmds.window("verExtWin", title="頂点の選択", width=200)
     cmds.columnLayout(columnAttach=("both", 5), rowSpacing=5, columnWidth=200, adjustableColumn=True)
     cmds.text(label=u'エッジの延長スクリプト')
-    cmds.button(label=u'実行', command=f'{__name__}.vertex_extend_processer({vertex0})')
+    cmds.button(label=u'実行', command=f'import {__name__};{__name__}.vertex_extend_processer()')
     cmds.text(label=u'2つ目の頂点のみ選択して"実行"')
     cmds.text(label = 'version: ' + version(), width = 180, align = 'right')
     cmds.showWindow('verExtWin')
 
 
 #処理実行関数
-def vertex_extend_processer(vertex0):
+def vertex_extend_processer():
     vertex1 = None
     x, y, z = []
 
