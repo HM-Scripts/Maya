@@ -324,7 +324,7 @@ def HM_localRenderQUI():
     window.show()
 
 def version():
-    version = '0.1.0\N{greek small letter alpha}'
+    version = '0.2.0\N{greek small letter alpha}'
     return version
 
 def main():
