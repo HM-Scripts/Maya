@@ -1,0 +1,15 @@
+{
+    "Properties": {
+        "dataType": "HM_mayaScriptInstallData",
+        "scriptName": "HM_renderQueue",
+        "scriptFiles": ["HM_renderQueue.py"],
+        "mkdir": [],
+        "buttonNum": 1,
+        "buttonName": ["HM_renderQueue"],
+        "command": ["import HM_renderQueue;HM_renderQueue.main()"],
+        "image": ["pythonFamily.png"],
+        "annotation": ["HM_renderQueue"],
+        "label": ["renderQ"],
+        "sourceType": ["Python"]
+    }
+}
